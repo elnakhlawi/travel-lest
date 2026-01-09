@@ -1,29 +1,37 @@
 import { useState } from "react";
 import "./App.css";
 
-
-
 export default function App() {
   const [items, setItems] = useState([]);
-
   function handleItems(item) {
     setItems([...items, item]);
-    console.log(items);
   }
   function handleDeleteItem(id) {
-    console.log(id);
     setItems(
       items.filter((item) => {
         return item.id !== id;
       })
     );
   }
+
+  function handleUpdateItem(id) {
+    setItems((items) => {
+      return items.map((item) => {
+        return item.id == id ? { ...item, packed: !item.packed } : item;
+      });
+    });
+  }
+
   return (
     <div className="app">
       <Logo />
       <Form handleItems={handleItems} />
-      <PackingList items={items} handleDeleteItem={handleDeleteItem} />
-      <Status />
+      <PackingList
+        items={items}
+        handleDeleteItem={handleDeleteItem}
+        handleUpdateItem={handleUpdateItem}
+      />
+      <Status items={items} />
     </div>
   );
 }
@@ -43,7 +51,6 @@ function Form({ handleItems }) {
     setDescription("");
     setQuantity(1);
     handleItems(newItem);
-    console.log(newItem);
   }
 
   return (
@@ -73,23 +80,37 @@ function Form({ handleItems }) {
   );
 }
 
-function PackingList({ items, handleDeleteItem }) {
+function PackingList({ items, handleDeleteItem, handleUpdateItem }) {
   return (
     <div className="list">
       <ul>
-        {items.length>0?items.map((item) => (
-          <Item item={item} key={item.id} handleDeleteItem={handleDeleteItem} />
-        )):<h1 style={{backgroundColor:'transparent'}}>'No Items'</h1>}
+        {items.length > 0 ? (
+          items.map((item) => (
+            <Item
+              item={item}
+              key={item.id}
+              handleDeleteItem={handleDeleteItem}
+              handleUpdateItem={handleUpdateItem}
+            />
+          ))
+        ) : (
+          <h1 style={{ backgroundColor: "transparent" }}>'No Items'</h1>
+        )}
       </ul>
     </div>
   );
 }
 
-function Item({ item, handleDeleteItem }) {
-
+function Item({ item, handleDeleteItem, handleUpdateItem }) {
   return (
     <li>
-      <input type="checkbox"  />
+      <input
+        type="checkbox"
+        value={item.packed}
+        onChange={() => {
+          handleUpdateItem(item.id);
+        }}
+      />
       <span style={item.packed ? { textDecoration: "line-through" } : {}}>
         {item.quantity} {item.description}
       </span>
@@ -103,10 +124,12 @@ function Item({ item, handleDeleteItem }) {
     </li>
   );
 }
-function Status() {
+function Status({ items }) {
+  let itemsNumbers = items.length;
+
   return (
     <footer className="stats">
-      <em>🎒 you have x items on your list, and you already packed X (x%)</em>
+      <em>🎒 you have {itemsNumbers} items on your list, and you already packed X (x%)</em>
     </footer>
   );
 }
