@@ -125,11 +125,13 @@ function Item({ item, handleDeleteItem, handleUpdateItem }) {
   );
 }
 function Status({ items }) {
-  let itemsNumbers = items.length;
-
+  let itemsNumber = items.length;
+  let numberOfPacked=items.filter((item) => { return item.packed }).length;
+  let precentage= Math.round((  numberOfPacked/ itemsNumber  )* 100)||0;
+console.log(precentage);
   return (
     <footer className="stats">
-      <em>🎒 you have {itemsNumbers} items on your list, and you already packed X (x%)</em>
+      <em>{precentage ==100?" You got everything! ready to go ✈":`🎒 you have ${itemsNumber} items on your list, and you already packed ${numberOfPacked} (${precentage}%)`}</em>
     </footer>
   );
 }
