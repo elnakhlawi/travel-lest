@@ -1,11 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 
-const initialItems = [
-  { id: 1, description: "Passports", quantity: 2, packed: true },
-  { id: 2, description: "Socks", quantity: 12, packed: true },
-  { id: 3, description: "Charger", quantity: 1, packed: false },
-];
+
 
 export default function App() {
   const [items, setItems] = useState([]);
@@ -14,11 +10,19 @@ export default function App() {
     setItems([...items, item]);
     console.log(items);
   }
+  function handleDeleteItem(id) {
+    console.log(id);
+    setItems(
+      items.filter((item) => {
+        return item.id !== id;
+      })
+    );
+  }
   return (
     <div className="app">
       <Logo />
       <Form handleItems={handleItems} />
-      <PackingList items={items} />
+      <PackingList items={items} handleDeleteItem={handleDeleteItem} />
       <Status />
     </div>
   );
@@ -41,6 +45,7 @@ function Form({ handleItems }) {
     handleItems(newItem);
     console.log(newItem);
   }
+
   return (
     <form className="add-form" onSubmit={handleSubmit}>
       <h3> what do you need for your 😍tirp?</h3>
@@ -68,25 +73,33 @@ function Form({ handleItems }) {
   );
 }
 
-function PackingList({ items }) {
+function PackingList({ items, handleDeleteItem }) {
   return (
     <div className="list">
       <ul>
-        {items.length > 0
-          ? items.map((item) => <Item item={item} key={item.id} />)
-          : initialItems.map((item) => <Item item={item} key={item.id} />)}
+        {items.length>0?items.map((item) => (
+          <Item item={item} key={item.id} handleDeleteItem={handleDeleteItem} />
+        )):<h1 style={{backgroundColor:'transparent'}}>'No Items'</h1>}
       </ul>
     </div>
   );
 }
 
-function Item({ item }) {
+function Item({ item, handleDeleteItem }) {
+
   return (
     <li>
+      <input type="checkbox"  />
       <span style={item.packed ? { textDecoration: "line-through" } : {}}>
         {item.quantity} {item.description}
       </span>
-      <button>❌</button>
+      <button
+        onClick={() => {
+          handleDeleteItem(item.id);
+        }}
+      >
+        ❌
+      </button>
     </li>
   );
 }
