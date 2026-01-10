@@ -25,7 +25,7 @@ export default function App() {
   return (
     <div className="app">
       <Logo />
-      <Form handleItems={handleItems} />
+      <Form handleItems={handleItems} items={items} />
       <PackingList
         items={items}
         handleDeleteItem={handleDeleteItem}
@@ -81,22 +81,41 @@ function Form({ handleItems }) {
 }
 
 function PackingList({ items, handleDeleteItem, handleUpdateItem }) {
+  const [sortby, setSortBy] = useState("input");
+  let sortedItems;
+  if(sortby ==='input')sortedItems=items;
+  if(sortby ==='description') sortedItems=items.slice().sort((a,b) => { return a.description.localeCompare(b.description) });
+  if(sortby ==="packed")sortedItems=  items.slice().sort((a,b) => {return Number(a.packed) - Number(b.packed)})
   return (
-    <div className="list">
-      <ul>
-        {items.length > 0 ? (
-          items.map((item) => (
-            <Item
-              item={item}
-              key={item.id}
-              handleDeleteItem={handleDeleteItem}
-              handleUpdateItem={handleUpdateItem}
-            />
-          ))
-        ) : (
-          <h1 style={{ backgroundColor: "transparent" }}>'No Items'</h1>
-        )}
-      </ul>
+    <div style={{backgroundColor:'black'}}>
+      <div className="actions" style={{position:'absolute',right:'20px',}}>
+        <select
+          value={sortby}
+          onChange={(e) => {
+            setSortBy(e.target.value);
+          }}
+        >
+          <option value="input">Sort by input</option>
+          <option value="description">Sort by description</option>
+          <option value="packed">Sort by packed</option>
+        </select>
+      </div>
+      <div className="list" style={{height:'100%'}}>
+        <ul>
+          {items.length > 0 ? (
+            sortedItems.map((item) => (
+              <Item
+                item={item}
+                key={item.id}
+                handleDeleteItem={handleDeleteItem}
+                handleUpdateItem={handleUpdateItem}
+              />
+            ))
+          ) : (
+            <h1 style={{ backgroundColor: "transparent" }}>'No Items'</h1>
+          )}
+        </ul>
+      </div>
     </div>
   );
 }
@@ -126,12 +145,18 @@ function Item({ item, handleDeleteItem, handleUpdateItem }) {
 }
 function Status({ items }) {
   let itemsNumber = items.length;
-  let numberOfPacked=items.filter((item) => { return item.packed }).length;
-  let precentage= Math.round((  numberOfPacked/ itemsNumber  )* 100)||0;
-console.log(precentage);
+  let numberOfPacked = items.filter((item) => {
+    return item.packed;
+  }).length;
+  let precentage = Math.round((numberOfPacked / itemsNumber) * 100) || 0;
+  console.log(precentage);
   return (
     <footer className="stats">
-      <em>{precentage ==100?" You got everything! ready to go ✈":`🎒 you have ${itemsNumber} items on your list, and you already packed ${numberOfPacked} (${precentage}%)`}</em>
+      <em>
+        {precentage == 100
+          ? " You got everything! ready to go ✈"
+          : `🎒 you have ${itemsNumber} items on your list, and you already packed ${numberOfPacked} (${precentage}%)`}
+      </em>
     </footer>
   );
 }
