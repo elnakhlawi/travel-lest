@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./App.css";
-
+import DeleteButton from "./components/ConfiremDelete";
 export default function App() {
   const [items, setItems] = useState([]);
   function handleItems(item) {
@@ -22,6 +22,10 @@ export default function App() {
     });
   }
 
+  function handleClearItems() {
+    setItems([]);
+  }
+
   return (
     <div className="app">
       <Logo />
@@ -30,6 +34,7 @@ export default function App() {
         items={items}
         handleDeleteItem={handleDeleteItem}
         handleUpdateItem={handleUpdateItem}
+        handleClearItems={handleClearItems}
       />
       <Status items={items} />
     </div>
@@ -80,27 +85,43 @@ function Form({ handleItems }) {
   );
 }
 
-function PackingList({ items, handleDeleteItem, handleUpdateItem }) {
+function PackingList({
+  items,
+  handleDeleteItem,
+  handleUpdateItem,
+  handleClearItems,
+}) {
   const [sortby, setSortBy] = useState("input");
   let sortedItems;
-  if(sortby ==='input')sortedItems=items;
-  if(sortby ==='description') sortedItems=items.slice().sort((a,b) => { return a.description.localeCompare(b.description) });
-  if(sortby ==="packed")sortedItems=  items.slice().sort((a,b) => {return Number(a.packed) - Number(b.packed)})
+  if (sortby === "input") sortedItems = items;
+  if (sortby === "description")
+    sortedItems = items.slice().sort((a, b) => {
+      return a.description.localeCompare(b.description);
+    });
+  if (sortby === "packed")
+    sortedItems = items.slice().sort((a, b) => {
+      return Number(a.packed) - Number(b.packed);
+    });
   return (
-    <div style={{backgroundColor:'black'}}>
-      <div className="actions" style={{position:'absolute',right:'20px',}}>
-        <select
-          value={sortby}
-          onChange={(e) => {
-            setSortBy(e.target.value);
-          }}
+    <div style={{ backgroundColor: "black" }}>
+      {items.length > 0 && (
+        <div
+          className="actions"
+          style={{ position: "absolute", right: "20px" }}
         >
-          <option value="input">Sort by input</option>
-          <option value="description">Sort by description</option>
-          <option value="packed">Sort by packed</option>
-        </select>
-      </div>
-      <div className="list" style={{height:'100%'}}>
+          <select
+            value={sortby}
+            onChange={(e) => {
+              setSortBy(e.target.value);
+            }}
+          >
+            <option value="input">Sort by input</option>
+            <option value="description">Sort by description</option>
+            <option value="packed">Sort by packed</option>
+          </select>
+        </div>
+      )}
+      <div className="list" style={{ height: "100%" }}>
         <ul>
           {items.length > 0 ? (
             sortedItems.map((item) => (
@@ -115,6 +136,15 @@ function PackingList({ items, handleDeleteItem, handleUpdateItem }) {
             <h1 style={{ backgroundColor: "transparent" }}>'No Items'</h1>
           )}
         </ul>
+      </div>
+      <div
+        className="clearItems"
+        style={{ position: "absolute", right: "20px", bottom: "30px" }}
+      >
+        <DeleteButton
+          style={{ fontWeight: "900" }}
+          handleClearItems={handleClearItems}
+        />
       </div>
     </div>
   );
