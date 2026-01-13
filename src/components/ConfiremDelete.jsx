@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 const MySwal = withReactContent(Swal);
-export default function DeleteButton({ handleClearItems }) {
+export default function DeleteButton({ handleClearItems ,items}) {
   const showConfirm = () => {
     MySwal.fire({
       title: "Are you sure, you want delete all items?",
@@ -21,5 +21,5 @@ export default function DeleteButton({ handleClearItems }) {
     });
   };
 
-  return <button onClick={showConfirm}>Clear List</button>;
+  return <button style={{cursor:items.length<=0?'not-allowed':'pointer'}} onClick={showConfirm}>Clear List</button>;
 }
